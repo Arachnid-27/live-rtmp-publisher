@@ -3,18 +3,15 @@
 
 class VideoSource {
 public:
-    VideoSource(int width, int height): mWidth(width), mHeight(height) {}
-
     virtual ~VideoSource() {}
 
-    int getWidth() { return mWidth; }
+    virtual int getWidth() const = 0;
 
-    int getHeight() { return mHeight; }
+    virtual int getHeight() const = 0;
+
+    virtual bool isOpened() const = 0;
 
     virtual char* getNextFrame() = 0;
-private:
-    int mWidth;
-    int mHeight;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "CameraSource.h"
 
-CameraSource::CameraSource(int index, int width, int height): VideoSource(width, height), mCamera(cv::VideoCapture(index)) {
+CameraSource::CameraSource(int index, int width, int height): mWidth(width), mHeight(height), mCamera(cv::VideoCapture(index)) {
     if (mCamera.isOpened()) {
         mCamera.set(cv::CAP_PROP_FRAME_WIDTH, width);
         mCamera.set(cv::CAP_PROP_FRAME_HEIGHT, height);

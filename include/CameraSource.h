@@ -11,10 +11,16 @@ public:
 
     ~CameraSource();
 
-    bool isOpened() const { return mCamera.isOpened(); }
+    virtual int getWidth() const { return mWidth; }
+
+    virtual int getHeight() const { return mHeight; }
+
+    virtual bool isOpened() const { return mCamera.isOpened(); }
 
     virtual char* getNextFrame();
 protected:
+    int mWidth;
+    int mHeight;
     cv::VideoCapture mCamera;
     cv::Mat mFrame;
     cv::Mat mYuv;
