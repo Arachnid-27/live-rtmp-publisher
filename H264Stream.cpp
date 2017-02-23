@@ -1,6 +1,6 @@
 #include "H264Stream.h"
 
-H264Stream::H264Stream(VideoSource* source, PacketQueue* queue, int fps, int bitrate): 
+H264Stream::H264Stream(FilteredVideoSource* source, PacketQueue* queue, int fps, int bitrate): 
     mInterval(1000 / fps), mSource(source), mQueue(queue), 
     mEncoder(source->getWidth(), source->getHeight(), fps, bitrate) {
         x264_nal_t *result = mEncoder.getMetadata();

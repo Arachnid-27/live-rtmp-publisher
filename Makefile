@@ -1,4 +1,4 @@
-OBJ = main.o CameraSource.o MotionDetector.o H264Encoder.o H264Stream.o RTMPPublisher.o PacketQueue.o AACEncoder.o AACStream.o PCMSource.o H264RTMPPackager.o AACRTMPPackager.o
+OBJ = main.o CameraSource.o MotionDetector.o H264Encoder.o H264Stream.o RTMPPublisher.o PacketQueue.o AACEncoder.o AACStream.o PCMSource.o H264RTMPPackager.o AACRTMPPackager.o YUY2Converter.o V4L2Source.o FilteredVideoSource.o
 
 HDR = include
 OPENCV = `pkg-config --cflags --libs opencv`

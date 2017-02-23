@@ -1,16 +1,23 @@
 #include "MotionDetector.h"
 
-void MotionDetector::filter(cv::Mat& frame) {
+char* MotionDetector::filter(const unsigned char* data, int width, int height) {
+    if (mRgb.empty()) {
+        mRgb.create(height, width, CV_8UC3);
+    }
+
     cv::Mat fg;
     PointArray contours;
 
-    mSubtractor->apply(frame, fg);
+    memcpy(mRgb.data, data, height * width * 3);
+    mSubtractor->apply(mRgb, fg);
 
 //    cv::erode(fg, fg, cv::Mat());
 //    cv::dilate(fg, fg, cv::Mat());
     cv::findContours(fg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    drawRect(contours, mRgb, 1000);
+    cv::cvtColor(mRgb, mYuv, CV_RGB2YUV_I420);
 
-    drawRect(contours, frame, 1000);
+    return reinterpret_cast<char*>(mYuv.data);
 }
 
 void MotionDetector::drawRect(const PointArray& contours, cv::Mat& frame, double threshold) {

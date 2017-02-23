@@ -2,10 +2,7 @@
 
 AACStream::AACStream(AudioSource* source, PacketQueue* queue, int bitrate): 
     mSource(source), mQueue(queue),
-    mEncoder(source->getSampleRate(), source->getChannals(), bitrate) {
-        std::pair<int, char*> result = mEncoder.getMetadata();
-        buildMetadata(result.first, result.second);
-    }
+    mEncoder(source->getSampleRate(), source->getChannals(), bitrate) {}
 
 void AACStream::buildMetadata(int size, char* data) {
     char *body = mDataBuf + RTMP_MAX_HEADER_SIZE;
@@ -23,9 +20,16 @@ void AACStream::buildMetadata(int size, char* data) {
 }
 
 void AACStream::run() {
+    if (!mSource->isOpened()) {
+        return;
+    }
+
     char *frame;
     std::pair<int, char*> result;
     AACRTMPPackager packager;
+
+    result = mEncoder.getMetadata();
+    buildMetadata(result.first, result.second);
 
     mQueue->push(mMetadata);
 

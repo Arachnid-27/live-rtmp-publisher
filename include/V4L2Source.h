@@ -6,6 +6,7 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <linux/videodev2.h>
+#include <cstring>
 #include <iostream>
 #include "VideoSource.h"
 
@@ -27,7 +28,7 @@ public:
 
     virtual bool isOpened() const { return mDeviceFd != -1; }
 
-    virtual char* getNextFrame() = 0;
+    virtual char* getNextFrame();
 private:
     bool checkCapability();
     bool checkFormat(int width, int height, char a, char b, char c, char d);

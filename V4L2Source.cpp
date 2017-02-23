@@ -1,6 +1,7 @@
 #include "V4L2Source.h"
 
 V4L2Source::V4L2Source(int width, int height, const char* name, char a, char b, char c, char d) {
+    mIsCaptrue = false;
     if ((mDeviceFd = open(name, O_RDWR)) == -1) {
         std::cout << "can not open " << name << std::endl;
     } else if (!checkCapability() || !checkFormat(width, height, a, b, c, d) || !initBuffer()) {
@@ -27,6 +28,12 @@ char* V4L2Source::getNextFrame() {
             std::cout << "capture error" << std::endl;
             return NULL;
         }
+
+        memset(&mDataBuf, 0, sizeof(mDataBuf));
+        mDataBuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+        mDataBuf.memory = V4L2_MEMORY_MMAP;
+
+        mIsCaptrue = true;
     } else if (ioctl(mDeviceFd, VIDIOC_QBUF, &mDataBuf) == -1) {
         std::cout << "set buffer error" << std::endl;
         return NULL;
@@ -62,13 +69,13 @@ bool V4L2Source::checkFormat(int width, int height, char a, char b, char c, char
     fmt.fmt.pix.width = width;
     fmt.fmt.pix.height = height;
     fmt.fmt.pix.pixelformat = v4l2_fourcc(a, b, c, d);
-    fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
+    fmt.fmt.pix.field = V4L2_FIELD_NONE;
 
     if (ioctl(mDeviceFd, VIDIOC_S_FMT, &fmt) == -1) {
         std::cout << "set format error" << std::endl;
         return false;
     }
-    if (fmt.fmt.pix.field != v4l2_fourcc(a, b, c, d)) {
+    if (fmt.fmt.pix.pixelformat != v4l2_fourcc(a, b, c, d)) {
         std::cout << "unsupport format (" << a << b << c << d << ")" << std::endl;
         return false;
     }
@@ -117,7 +124,7 @@ bool V4L2Source::initBuffer() {
             return false;
         }
 
-        if (ioctl(mDeviceFd, VIDIOC_QBUF, &buf)) {
+        if (ioctl(mDeviceFd, VIDIOC_QBUF, &buf) == -1) {
             std::cout << "set buffer error" << std::endl;
             munmapBuffer(i);
             return false;
