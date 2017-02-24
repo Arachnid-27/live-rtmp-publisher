@@ -7,15 +7,18 @@ class RTMPPackager {
 public:
     RTMPPackager() {}
 
-    RTMPPackager(int size, const char* data): mSize(size), mData(data) {}
+    RTMPPackager(int length, const char* data): mLength(length), mData(data) {}
 
-    void setSize(int size) { mSize = size; };
-
-    void setData(const char* data) { mData = data; }
+    void setData(int length, const char* data) {
+        mLength = length;
+        mData = data;
+    }
 
     virtual RTMPPacket pack(char* buf) = 0;
+
+    virtual RTMPPacket metadata(char* buf) = 0;
 protected:
-    int mSize;
+    int mLength;
     const char *mData;
 };
 

@@ -8,7 +8,9 @@ class PCMSource: public AudioSource {
 public:
     PCMSource(const char* name = "default", int sampleRate = 44100, int channals = 2, int period = 1024);
 
-    ~PCMSource();
+    virtual ~PCMSource();
+
+    virtual void setPeriod(int period) { mPeriod = period; }
 
     virtual int getSampleRate() const { return mSampleRate; }
 
@@ -16,9 +18,9 @@ public:
 
     virtual bool isOpened() const { return mIsOpened; }
 
-    virtual int getSampleNum() const { return mChannals * mPeriod; }
+    virtual int getMaxSample() const { return mChannals * mPeriod; }
 
-    virtual char* getNextFrames();
+    virtual std::pair<int, char*> getNextFrames();
 private:
     unsigned int mSampleRate;
     int mChannals;

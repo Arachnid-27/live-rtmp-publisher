@@ -17,25 +17,20 @@ int main(int argc, char *argv[]) {
     YUY2Converter converter(YUY2_CVT_I420);
 //    YUY2Converter converter(YUY2_CVT_RGB24);
 //    MotionDetector detector;
-    FilteredVideoSource videoSource(&v4l2);
+    FilteredVideoSource videoSource(v4l2);
     videoSource.addFilter(&converter);
 //    videoSource.addFilter(&detector);
 
     RTMPPublisher publisher(&queue);
-    char url[] = "rtmp://127.0.0.1/live/test";
-
-    if (!videoSource.isOpened()) {
-        std::cout << "open camera error!" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    char url[] = "rtmp://119.29.175.159/live/test";
 
     if (!publisher.connect(url)) {
         std::cout << "connect server error!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    H264Stream videoStream(&videoSource, &queue, 16, 512);
-    AACStream audioStream(&pcm, &queue);
+    H264Stream videoStream(videoSource, queue, 16, 512);
+    AACStream audioStream(pcm, queue);
 
     std::thread VideoEncodeThread(&H264Stream::run, &videoStream);
     std::thread AudioEncodeThread(&AACStream::run, &audioStream);

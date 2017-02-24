@@ -8,9 +8,11 @@ class AACRTMPPackager: public RTMPPackager {
 public:
     AACRTMPPackager() {}
 
-    AACRTMPPackager(int size, const char* data): RTMPPackager(size, data) {}
+    AACRTMPPackager(int length, const char* data): RTMPPackager(length, data) {}
 
     virtual RTMPPacket pack(char* buf);
+
+    virtual RTMPPacket metadata(char* buf);
 };
 
 #endif

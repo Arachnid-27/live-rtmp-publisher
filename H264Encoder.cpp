@@ -1,15 +1,6 @@
 #include "H264Encoder.h"
 
 H264Encoder::H264Encoder(int width, int height, int fps, int bitrate): mPts(0) {
-    reset(width, height, fps, bitrate);
-}
-
-H264Encoder::~H264Encoder() {
-    x264_encoder_close(mHandle);
-    x264_picture_clean(&mPicture);
-}
-
-void H264Encoder::reset(int width, int height, int fps, int bitrate) {
     x264_param_t param;
 
     mLumaSize = width * height;
@@ -28,13 +19,18 @@ void H264Encoder::reset(int width, int height, int fps, int bitrate) {
     param.rc.i_rc_method = X264_RC_ABR;
     param.rc.i_bitrate = bitrate;
 
-    param.b_repeat_headers = 0; // 格式不一样 所以自己在关键帧前手动添加
-    param.b_annexb = 0; // 便于封装
+    param.b_repeat_headers = 0; // add sps and pps manually
+    param.b_annexb = 0; // for the convenience of packing
 
     x264_param_apply_profile(&param, "baseline");
     x264_picture_alloc(&mPicture, param.i_csp, param.i_width, param.i_height);
 
     mHandle = x264_encoder_open(&param);
+}
+
+H264Encoder::~H264Encoder() {
+    x264_encoder_close(mHandle);
+    x264_picture_clean(&mPicture);
 }
 
 std::pair<int, char*> H264Encoder::encode(char* frame) {
@@ -52,8 +48,11 @@ std::pair<int, char*> H264Encoder::encode(char* frame) {
     return std::make_pair(size, reinterpret_cast<char*>(mNal->p_payload));
 }
 
-x264_nal_t* H264Encoder::getMetadata() {
-    int temp;
+std::pair<int, char*> H264Encoder::getMetadata() {
+    int temp, size;
+
     x264_encoder_headers(mHandle, &mNal, &temp);
-    return mNal;
+    size = mNal[0].i_payload + mNal[1].i_payload;
+
+    return std::make_pair(size, reinterpret_cast<char*>(mNal->p_payload));
 }

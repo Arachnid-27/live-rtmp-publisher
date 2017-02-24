@@ -1,4 +1,12 @@
-OBJ = main.o CameraSource.o MotionDetector.o H264Encoder.o H264Stream.o RTMPPublisher.o PacketQueue.o AACEncoder.o AACStream.o PCMSource.o H264RTMPPackager.o AACRTMPPackager.o YUY2Converter.o V4L2Source.o FilteredVideoSource.o
+SOURCE = PCMSource.o V4L2Source.o CvVideoSource.o FilteredVideoSource.o
+FILTER = YUY2Converter.o MotionDetector.o
+ENCODE = AACEncoder.o H264Encoder.o
+PACKET = AACRTMPPackager.o H264RTMPPackager.o
+STREAM = AACStream.o H264Stream.o
+OTHERS = RTMPPublisher.o PacketQueue.o
+
+EXE = main
+OBJS = main.o $(SOURCE) $(FILTER) $(ENCODE) $(PACKET) $(STREAM) $(OTHERS)
 
 HDR = include
 OPENCV = `pkg-config --cflags --libs opencv`
@@ -6,7 +14,7 @@ OPENCV = `pkg-config --cflags --libs opencv`
 CC = g++
 CFLAGS = -std=c++11 -O2 -pthread -I $(HDR) -lx264 -lrtmp -lasound -lfaac $(OPENCV)
 
-main: $(OBJ)
+$(EXE): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o: %.cpp
@@ -14,4 +22,4 @@ main: $(OBJ)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ) main
+	rm -f $(EXE) $(OBJS)

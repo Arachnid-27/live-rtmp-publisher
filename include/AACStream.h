@@ -9,14 +9,12 @@
 
 class AACStream {
 public:
-    AACStream(AudioSource* source, PacketQueue* queue, int bitrate = 48000);
+    AACStream(AudioSource& source, PacketQueue& queue, int bitrate = 48000);
 
     void run();
 private:
-    void buildMetadata(int size, char* data);
-private:
-    AudioSource *mSource;
-    PacketQueue *mQueue;
+    AudioSource &mSource;
+    PacketQueue &mQueue;
     AACEncoder mEncoder;
     RTMPPacket mMetadata;
     char mDataBuf[32];

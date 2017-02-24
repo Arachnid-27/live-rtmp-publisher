@@ -15,9 +15,7 @@ public:
 
     ~H264Encoder();
 
-    void reset(int width, int height, int fps, int bitrate);
-
-    x264_nal_t* getMetadata();
+    std::pair<int, char*> getMetadata();
 
     std::pair<int, char*> encode(char* frame);
 private:

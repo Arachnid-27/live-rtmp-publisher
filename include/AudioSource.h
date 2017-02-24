@@ -1,9 +1,13 @@
 #ifndef _AUDIO_SOURCE_H_
 #define _AUDIO_SOURCE_H_
 
+#include <utility>
+
 class AudioSource {
 public:
     virtual ~AudioSource() {}
+
+    virtual void setPeriod(int period) = 0;
 
     virtual int getSampleRate() const = 0;
 
@@ -11,9 +15,10 @@ public:
 
     virtual bool isOpened() const = 0;
 
-    virtual int getSampleNum() const = 0;
+    virtual int getMaxSample() const = 0;
 
-    virtual char* getNextFrames() = 0;
+    // return the number of sample and data
+    virtual std::pair<int, char*> getNextFrames() = 0;
 };
 
 #endif

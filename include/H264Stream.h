@@ -13,15 +13,13 @@
 
 class H264Stream {
 public:
-    H264Stream(FilteredVideoSource* source, PacketQueue* queue, int fps, int bitrate);
+    H264Stream(FilteredVideoSource& source, PacketQueue& queue, int fps, int bitrate);
 
     void run();
 private:
-    void buildMetadata(x264_nal_t* sps, x264_nal_t* pps);
-private:
     std::chrono::milliseconds mInterval;
-    FilteredVideoSource *mSource;
-    PacketQueue *mQueue;
+    FilteredVideoSource &mSource;
+    PacketQueue &mQueue;
     H264Encoder mEncoder;
     RTMPPacket mMetadata;
     char mDataBuf[256];

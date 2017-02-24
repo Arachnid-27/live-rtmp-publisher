@@ -39,7 +39,9 @@ char* V4L2Source::getNextFrame() {
         return NULL;
     }
 
-    if (ioctl(mDeviceFd, VIDIOC_DQBUF, &mDataBuf) == -1) {
+    while (ioctl(mDeviceFd, VIDIOC_DQBUF, &mDataBuf) == -1) {
+        if (errno == EIO) continue;
+
         std::cout << "get buffer error" << std::endl;
         return NULL;
     }

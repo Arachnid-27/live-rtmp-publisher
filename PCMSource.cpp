@@ -21,7 +21,7 @@ PCMSource::PCMSource(const char *name, int sampleRate, int channals, int period)
                 snd_pcm_drain(mHandle);
                 snd_pcm_close(mHandle);
             } else {
-                mDataBuf = new char[getSampleNum() * 2];
+                mDataBuf = new char[getMaxSample() * 2];
             }
         }
     }
@@ -34,7 +34,7 @@ PCMSource::~PCMSource() {
     }
 }
 
-char* PCMSource::getNextFrames() {
+std::pair<int, char*> PCMSource::getNextFrames() {
     int ret;
     for (int i = 0; i != 5; ++i) {
         ret = snd_pcm_readi(mHandle, mDataBuf, mPeriod);
@@ -44,9 +44,9 @@ char* PCMSource::getNextFrames() {
         } else if (ret < 0) {
             break;
         } else {
-            // uncomplete read
-            return mDataBuf;
+            // maybe read incompletely
+            return std::make_pair(ret * mChannals, mDataBuf);
         }
     }
-    return NULL;
+    return std::make_pair(0, mDataBuf);
 }

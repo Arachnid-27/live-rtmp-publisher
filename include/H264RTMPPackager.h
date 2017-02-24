@@ -8,9 +8,11 @@ class H264RTMPPackager: public RTMPPackager {
 public:
     H264RTMPPackager() {}
     
-    H264RTMPPackager(int size, const char* data): RTMPPackager(size, data) {}
+    H264RTMPPackager(int length, const char* data): RTMPPackager(length, data) {}
 
     virtual RTMPPacket pack(char* buf);
+
+    virtual RTMPPacket metadata(char* buf);
 };
 
 #endif
