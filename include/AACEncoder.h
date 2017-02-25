@@ -11,13 +11,15 @@ public:
 
     ~AACEncoder();
 
+    int getMaxSample() const { return mMaxSample; }
+
     std::pair<int, char*> getMetadata();
     
     std::pair<int, char*> encode(int sample, char* data);
 private:
     faacEncHandle mEncoder;
     unsigned long mMaxSample;
-    unsigned long mBufSize;
+    unsigned long mBufLength;
     char *mDataBuf;
 };
 

@@ -1,17 +1,12 @@
 #include "PacketQueue.h"
 
-PacketQueue::PacketQueue(int capacity, int size): mCapacity(capacity) {
+PacketQueue::PacketQueue(int capacity): mCapacity(capacity) {
     mDataBuf = new PacketNode[capacity];
-    for (int i = 0; i != capacity; ++i) {
-        mDataBuf[i].buf = new char[size];
-    }
+    memset(mDataBuf, 0, capacity * sizeof(PacketNode));
     mHead = mTail = 0;
 }
 
 PacketQueue::~PacketQueue() {
-    for (int i = 0; i != mCapacity; ++i) {
-        delete[] mDataBuf[i].buf;
-    }
     delete[] mDataBuf;
 }
 
@@ -22,6 +17,7 @@ void PacketQueue::push(RTMPPackager& packager) {
         mFull.wait(lock);
     }
 
+    mDataBuf[mTail].buf = mPool.getChunk(packager.getBodyLength() + RTMP_MAX_HEADER_SIZE);
     mDataBuf[mTail].packet = packager.pack(mDataBuf[mTail].buf);
 
     if (++mTail == mCapacity) {
@@ -39,6 +35,7 @@ void PacketQueue::push(const RTMPPacket& packet) {
         mFull.wait(lock);
     }
 
+    mDataBuf[mTail].buf = NULL;
     mDataBuf[mTail].packet = packet;
 
     if (++mTail == mCapacity) {
@@ -65,6 +62,10 @@ void PacketQueue::pop() {
     std::lock_guard<std::mutex> lock(mMutex);
 
     if (mHead != mTail) {
+        if (mDataBuf[mHead].buf) {
+            mPool.putChunk(mDataBuf[mHead].packet.m_nBodySize + RTMP_MAX_HEADER_SIZE, mDataBuf[mHead].buf);
+            mDataBuf[mHead].buf = NULL;
+        }
         if (++mHead == mCapacity) {
             mHead = 0;
         }

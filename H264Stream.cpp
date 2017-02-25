@@ -22,7 +22,7 @@ void H264Stream::run() {
     while ((frame = mSource.getNextFrame()) != NULL) {
         result = mEncoder.encode(frame);
         packager.setData(result.first, result.second);
-
+    
         if ((result.second[4] & 0x1f) == 0x05) { // key frame
             mQueue.push(mMetadata);
         }

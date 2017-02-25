@@ -9,6 +9,8 @@ void AACStream::run() {
         return;
     }
 
+    mSource.setMaxSample(mEncoder.getMaxSample());
+
     std::pair<int, char*> frame;
     std::pair<int, char*> result = mEncoder.getMetadata();
     AACRTMPPackager packager(result.first, result.second);

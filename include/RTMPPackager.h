@@ -14,6 +14,8 @@ public:
         mData = data;
     }
 
+    virtual int getBodyLength() const = 0;
+
     virtual RTMPPacket pack(char* buf) = 0;
 
     virtual RTMPPacket metadata(char* buf) = 0;

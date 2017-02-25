@@ -1,11 +1,11 @@
 # Dependencies
-- x264
+- x264  
 `sudo apt-get install libx264-dev`
-- faac
+- faac  
 `sudo apt-get install libfaac-dev`
-- librtmp
+- librtmp  
 `sudo apt-get install librtmp-dev`
-- alsa
+- alsa  
 `sudo apt-get install libasound2-dev`
-- v4l2
-- opencv(optional)
+- v4l2  
+- opencv3 (optional)

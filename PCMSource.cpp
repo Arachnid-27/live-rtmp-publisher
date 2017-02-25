@@ -1,7 +1,7 @@
 #include "PCMSource.h"
 
 PCMSource::PCMSource(const char *name, int sampleRate, int channals, int period): 
-    mSampleRate(sampleRate), mChannals(channals), mPeriod(period) {
+    mSampleRate(sampleRate), mChannals(channals), mDataBuf(NULL), mPeriod(period) {
         int direct;
         snd_pcm_hw_params_t *param;
 
@@ -20,8 +20,6 @@ PCMSource::PCMSource(const char *name, int sampleRate, int channals, int period)
             if (!mIsOpened) {
                 snd_pcm_drain(mHandle);
                 snd_pcm_close(mHandle);
-            } else {
-                mDataBuf = new char[getMaxSample() * 2];
             }
         }
     }
@@ -34,7 +32,29 @@ PCMSource::~PCMSource() {
     }
 }
 
+void PCMSource::setMaxSample(int sample) {
+    int period = mPeriod;
+    mPeriod = sample / mChannals; 
+
+    if (period < sample / mChannals) {
+        int direct;
+        snd_pcm_hw_params_t *param;
+        
+        snd_pcm_hw_params_alloca(&param);
+        snd_pcm_hw_params_current(mHandle, param);
+        snd_pcm_hw_params_set_period_size_near(mHandle, param, &mPeriod, &direct);
+    }
+}
+
 std::pair<int, char*> PCMSource::getNextFrames() {
+    if (!mIsOpened) {
+        return std::make_pair<int, char*>(0, NULL);
+    }
+
+    if (!mDataBuf) {
+        mDataBuf = new char[mPeriod * mChannals * 2];
+    }
+
     int ret;
     for (int i = 0; i != 5; ++i) {
         ret = snd_pcm_readi(mHandle, mDataBuf, mPeriod);
@@ -48,5 +68,5 @@ std::pair<int, char*> PCMSource::getNextFrames() {
             return std::make_pair(ret * mChannals, mDataBuf);
         }
     }
-    return std::make_pair(0, mDataBuf);
+    return std::make_pair<int, char*>(0, NULL);
 }

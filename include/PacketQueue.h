@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <librtmp/rtmp.h>
 #include "RTMPPackager.h"
+#include "MemoryPool.h"
 
 struct PacketNode {
     RTMPPacket packet;
@@ -16,7 +17,7 @@ struct PacketNode {
 
 class PacketQueue {
 public:
-    PacketQueue(int capacity = 100, int size = 32768);
+    PacketQueue(int capacity = 100);
 
     ~PacketQueue();
 
@@ -28,6 +29,7 @@ public:
 
     RTMPPacket& front();
 private:
+    MemoryPool mPool;
     PacketNode *mDataBuf;
     std::mutex mMutex;
     std::condition_variable mFull;

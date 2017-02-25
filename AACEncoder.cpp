@@ -1,7 +1,7 @@
 #include "AACEncoder.h"
 
 AACEncoder::AACEncoder(int sampleRate, int channals, int bitrate) {
-    mEncoder = faacEncOpen(sampleRate, channals, &mMaxSample, &mBufSize);
+    mEncoder = faacEncOpen(sampleRate, channals, &mMaxSample, &mBufLength);
 
     if (mEncoder != NULL) {
         faacEncConfigurationPtr conf = faacEncGetCurrentConfiguration(mEncoder);
@@ -14,7 +14,7 @@ AACEncoder::AACEncoder(int sampleRate, int channals, int bitrate) {
         conf->bandWidth = 32000;
         faacEncSetConfiguration(mEncoder, conf);  
 
-        mDataBuf = new char[mBufSize];
+        mDataBuf = new char[mBufLength];
     }
 }
 
@@ -30,7 +30,7 @@ std::pair<int, char*> AACEncoder::encode(int sample, char* data) {
         return std::make_pair<int, char*>(-1, NULL);
     }
 
-    int size = faacEncEncode(mEncoder, reinterpret_cast<int*>(data), sample, reinterpret_cast<unsigned char*>(mDataBuf), mBufSize);
+    int size = faacEncEncode(mEncoder, reinterpret_cast<int*>(data), sample, reinterpret_cast<unsigned char*>(mDataBuf), mBufLength);
 
     if (size < 0) {
         return std::make_pair<int, char*>(-1, NULL);

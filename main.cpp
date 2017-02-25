@@ -7,11 +7,52 @@
 #include "PCMSource.h"
 #include "FilteredVideoSource.h"
 #include "YUY2Converter.h"
-#include "MotionDetector.h"
+// #include "MotionDetector.h"
+
+void showUsage() {
+    std::cout << "usage: publisher [-w width] [-h height] [-f fps] [-b bitrate] url" << std::endl;
+    std::cout << "example: publisher -w 320 -h 240 rtmp://127.0.0.1/test/live" << std::endl;
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc, char *argv[]) {
+    int width = 320;
+    int height = 240;
+    int fps = 16;
+    int bitrate = 128;
+    char ch;
+
+    if (argc < 2) {
+        showUsage();
+    }
+
+    while ((ch = getopt(argc, argv, "w:h:f:b:")) != -1) {
+        switch (ch) {
+            case 'w':
+                width = atoi(optarg);
+                break;
+            case 'h':
+                height = atoi(optarg);
+                break;
+            case 'f':
+                fps = atoi(optarg);
+                break;
+            case 'b':
+                bitrate = atoi(optarg);
+                break;
+            default:
+                std::cout << "unknown option " << ch << std::endl;
+                showUsage();
+        }
+    }
+
+    if (argc <= optind) {
+        std::cout << "url not found" << std::endl;
+        showUsage();
+    }
+
     PacketQueue queue;
-    V4L2Source v4l2(320, 240);
+    V4L2Source v4l2(width, height);
     PCMSource pcm;
 
     YUY2Converter converter(YUY2_CVT_I420);
@@ -22,14 +63,13 @@ int main(int argc, char *argv[]) {
 //    videoSource.addFilter(&detector);
 
     RTMPPublisher publisher(&queue);
-    char url[] = "rtmp://119.29.175.159/live/test";
 
-    if (!publisher.connect(url)) {
+    if (!publisher.connect(argv[optind])) {
         std::cout << "connect server error!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    H264Stream videoStream(videoSource, queue, 16, 512);
+    H264Stream videoStream(videoSource, queue, fps, bitrate);
     AACStream audioStream(pcm, queue);
 
     std::thread VideoEncodeThread(&H264Stream::run, &videoStream);

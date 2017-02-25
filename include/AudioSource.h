@@ -7,15 +7,13 @@ class AudioSource {
 public:
     virtual ~AudioSource() {}
 
-    virtual void setPeriod(int period) = 0;
+    virtual void setMaxSample(int sample) = 0;
 
     virtual int getSampleRate() const = 0;
 
     virtual int getChannals() const = 0;
 
     virtual bool isOpened() const = 0;
-
-    virtual int getMaxSample() const = 0;
 
     // return the number of sample and data
     virtual std::pair<int, char*> getNextFrames() = 0;

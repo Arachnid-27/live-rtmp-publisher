@@ -10,15 +10,13 @@ public:
 
     virtual ~PCMSource();
 
-    virtual void setPeriod(int period) { mPeriod = period; }
+    virtual void setMaxSample(int sample);
 
     virtual int getSampleRate() const { return mSampleRate; }
 
     virtual int getChannals() const { return mChannals; }
 
     virtual bool isOpened() const { return mIsOpened; }
-
-    virtual int getMaxSample() const { return mChannals * mPeriod; }
 
     virtual std::pair<int, char*> getNextFrames();
 private:

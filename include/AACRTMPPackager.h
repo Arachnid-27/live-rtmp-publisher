@@ -10,6 +10,8 @@ public:
 
     AACRTMPPackager(int length, const char* data): RTMPPackager(length, data) {}
 
+    virtual int getBodyLength() const { return mLength - 5; }
+
     virtual RTMPPacket pack(char* buf);
 
     virtual RTMPPacket metadata(char* buf);
