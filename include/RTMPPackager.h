@@ -5,23 +5,11 @@
 
 class RTMPPackager {
 public:
-    RTMPPackager() {}
+    virtual RTMPPacket pack(char* buf, const char* data, int length) const = 0;
 
-    RTMPPackager(int length, const char* data): mLength(length), mData(data) {}
+    virtual RTMPPacket metadata(char* buf, const char* data, int length) const = 0;
 
-    void setData(int length, const char* data) {
-        mLength = length;
-        mData = data;
-    }
-
-    virtual int getBodyLength() const = 0;
-
-    virtual RTMPPacket pack(char* buf) = 0;
-
-    virtual RTMPPacket metadata(char* buf) = 0;
-protected:
-    int mLength;
-    const char *mData;
+    virtual int getBodyLength(int length) const = 0;
 };
 
 #endif

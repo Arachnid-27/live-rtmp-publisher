@@ -6,15 +6,13 @@
 
 class H264RTMPPackager: public RTMPPackager {
 public:
-    H264RTMPPackager() {}
-    
-    H264RTMPPackager(int length, const char* data): RTMPPackager(length, data) {}
+    virtual RTMPPacket pack(char* buf, const char* data, int length) const;
 
-    virtual int getBodyLength() const { return mLength + 5; }
+    virtual RTMPPacket metadata(char* buf, const char* data, int length) const;
 
-    virtual RTMPPacket pack(char* buf);
+    virtual int getBodyLength(int length) const { return length + 5 + RTMP_MAX_HEADER_SIZE; }
 
-    virtual RTMPPacket metadata(char* buf);
+    static bool isKeyFrame(char* data) { return data[4] & 0x1f; }
 };
 
 #endif

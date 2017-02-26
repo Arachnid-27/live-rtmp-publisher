@@ -6,15 +6,11 @@
 
 class AACRTMPPackager: public RTMPPackager {
 public:
-    AACRTMPPackager() {}
+    virtual RTMPPacket pack(char* buf, const char* data, int length) const;
 
-    AACRTMPPackager(int length, const char* data): RTMPPackager(length, data) {}
+    virtual RTMPPacket metadata(char* buf, const char* data, int length) const;
 
-    virtual int getBodyLength() const { return mLength - 5; }
-
-    virtual RTMPPacket pack(char* buf);
-
-    virtual RTMPPacket metadata(char* buf);
+    virtual int getBodyLength(int length) const { return length - 5 + RTMP_MAX_HEADER_SIZE; }
 };
 
 #endif

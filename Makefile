@@ -15,7 +15,7 @@ HDR = include
 OPENCV = $(NULLSTRING)
 
 CC = g++
-CFLAGS = -std=c++11 -g -pthread -I $(HDR) -lx264 -lrtmp -lasound -lfaac $(OPENCV)
+CFLAGS = -std=c++11 -O2 -pthread -I $(HDR) -lx264 -lrtmp -lasound -lfaac $(OPENCV)
 
 $(EXE): $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)

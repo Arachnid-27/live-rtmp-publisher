@@ -16,6 +16,7 @@ MemoryPool::~MemoryPool() {
 
 char* MemoryPool::getChunk(int bytes) {
     int idx = getIndex(bytes);
+    std::lock_guard<std::mutex> lock(mMutex);
     char *head = mList[idx];
 
     if (!head) {
@@ -29,11 +30,12 @@ char* MemoryPool::getChunk(int bytes) {
 
 void MemoryPool::putChunk(int bytes, char* data) {
     int idx = getIndex(bytes);
+    std::lock_guard<std::mutex> lock(mMutex);
 
     *(reinterpret_cast<char**>(data)) = mList[idx];
     mList[idx] = data;
 }
 
 inline int MemoryPool::getIndex(int bytes) const {
-    return std::upper_bound(mTable, mTable + 6, bytes) - mTable;
+    return std::upper_bound(mTable, mTable + 8, bytes) - mTable;
 }

@@ -3,12 +3,11 @@
 
 #include <librtmp/rtmp.h>
 #include "PacketQueue.h"
+#include "MemoryPool.h"
 
 class RTMPPublisher {
 public:
-    RTMPPublisher(PacketQueue* queue): mQueue(queue), mRTMP(RTMP_Alloc()) {
-        RTMP_Init(mRTMP);
-    }
+    RTMPPublisher(PacketQueue& queue, MemoryPool& pool);
 
     ~RTMPPublisher();
 
@@ -16,7 +15,8 @@ public:
 
     void run();
 private:
-    PacketQueue *mQueue;
+    PacketQueue &mQueue;
+    MemoryPool &mPool;
     RTMP *mRTMP;
 };
 

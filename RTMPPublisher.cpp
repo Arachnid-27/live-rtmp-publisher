@@ -1,5 +1,10 @@
 #include "RTMPPublisher.h"
 
+RTMPPublisher::RTMPPublisher(PacketQueue& queue, MemoryPool& pool): mQueue(queue), mPool(pool) {
+    mRTMP = RTMP_Alloc();
+    RTMP_Init(mRTMP);
+}
+
 RTMPPublisher::~RTMPPublisher() {
     if (mRTMP) {
         if (RTMP_IsConnected(mRTMP)) {
@@ -30,7 +35,7 @@ bool RTMPPublisher::connect(char *url) {
 
 void RTMPPublisher::run() {
     while (true) {
-        RTMPPacket &packet = mQueue->front();
+        RTMPPacket &packet = mQueue.front();
         packet.m_nInfoField2 = mRTMP->m_stream_id;
         packet.m_nTimeStamp = RTMP_GetTime();
 
@@ -42,6 +47,11 @@ void RTMPPublisher::run() {
             return;
         }
 
-        mQueue->pop();
+        int bytes = packet.m_nBodySize + RTMP_MAX_HEADER_SIZE;
+        char *body = packet.m_body - RTMP_MAX_HEADER_SIZE;
+
+        if (!mQueue.pop()) {
+            mPool.putChunk(bytes, body);
+        }
     }
 }

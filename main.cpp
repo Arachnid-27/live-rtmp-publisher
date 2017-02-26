@@ -52,6 +52,7 @@ int main(int argc, char *argv[]) {
     }
 
     PacketQueue queue;
+    MemoryPool pool;
     V4L2Source v4l2(width, height);
     PCMSource pcm;
 
@@ -62,15 +63,15 @@ int main(int argc, char *argv[]) {
     videoSource.addFilter(&converter);
 //    videoSource.addFilter(&detector);
 
-    RTMPPublisher publisher(&queue);
+    RTMPPublisher publisher(queue, pool);
 
     if (!publisher.connect(argv[optind])) {
         std::cout << "connect server error!" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    H264Stream videoStream(videoSource, queue, fps, bitrate);
-    AACStream audioStream(pcm, queue);
+    H264Stream videoStream(videoSource, queue, pool, fps, bitrate);
+    AACStream audioStream(pcm, queue, pool);
 
     std::thread VideoEncodeThread(&H264Stream::run, &videoStream);
     std::thread AudioEncodeThread(&AACStream::run, &audioStream);

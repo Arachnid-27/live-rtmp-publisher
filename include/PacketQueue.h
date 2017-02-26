@@ -6,14 +6,13 @@
 #include <condition_variable>
 #include <librtmp/rtmp.h>
 #include "RTMPPackager.h"
-#include "MemoryPool.h"
+
+// single consumer !!!
 
 struct PacketNode {
     RTMPPacket packet;
-    char *buf;
+    bool metadata;
 };
-
-// single consumer !!!
 
 class PacketQueue {
 public:
@@ -21,15 +20,12 @@ public:
 
     ~PacketQueue();
 
-    void push(RTMPPackager& packager);
-
-    void push(const RTMPPacket& packet);
-
-    void pop();
+    void push(const RTMPPacket& packet, bool metadata = false);
 
     RTMPPacket& front();
+
+    bool pop();
 private:
-    MemoryPool mPool;
     PacketNode *mDataBuf;
     std::mutex mMutex;
     std::condition_variable mFull;
