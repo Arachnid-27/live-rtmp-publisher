@@ -11,7 +11,7 @@ enum PixelFormat {
 
 class YUY2Converter: public VideoFrameFilter {
 public:
-    YUY2Converter(PixelFormat format): mDataBuf(NULL), mFormat(format) {}
+    YUY2Converter(PixelFormat format);
 
     virtual ~YUY2Converter();
 
@@ -20,8 +20,15 @@ private:
     void cvtI420(const unsigned char* data, int width, int height);
 
     void cvtRGB24(const unsigned char* data, int width, int height);
+
+    void createTable();
+
+    unsigned char round(float value);
+
+    int INDEX(int x, int y) const { return x * 256 + y; }
 private:
     char *mDataBuf;
+    char *mYV, *mYU, *mUV, *mYX;
     PixelFormat mFormat;
 };
 

@@ -14,7 +14,7 @@ char* MotionDetector::filter(const unsigned char* data, int width, int height) {
 //    cv::erode(fg, fg, cv::Mat());
 //    cv::dilate(fg, fg, cv::Mat());
     cv::findContours(fg, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-    drawRect(contours, mRgb, 1000);
+    drawRect(contours, mRgb, 3000);
     cv::cvtColor(mRgb, mYuv, CV_RGB2YUV_I420);
 
     return reinterpret_cast<char*>(mYuv.data);

@@ -1,5 +1,5 @@
 # SOURCE = PCMSource.o V4L2Source.o CvVideoSource.o FilteredVideoSource.o
-# FILTER = YU2Converter.o MotionDetector.o
+# FILTER = YUY2Converter.o MotionDetector.o
 SOURCE = PCMSource.o V4L2Source.o FilteredVideoSource.o
 FILTER = YUY2Converter.o
 ENCODE = AACEncoder.o H264Encoder.o

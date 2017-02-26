@@ -1,6 +1,18 @@
 #include "YUY2Converter.h"
 
+YUY2Converter::YUY2Converter(PixelFormat format): mDataBuf(NULL), mFormat(format) {
+    if (format == YUY2_CVT_RGB24) {
+        createTable();
+    }
+}
+
 YUY2Converter::~YUY2Converter() {
+    if (mFormat == YUY2_CVT_RGB24) {
+        delete[] mYV;
+        delete[] mYU;
+        delete[] mUV;
+        delete[] mYX;
+    }
     if (mDataBuf) {
         delete[] mDataBuf;
     }
@@ -61,11 +73,33 @@ void YUY2Converter::cvtRGB24(const unsigned char* data, int width, int height) {
         y2 = *(data++);
         v = *(data++);
 
-        *(p++) = 1.164 * (y1 - 16) + 1.596 * (v - 128);
-        *(p++) = 1.164 * (y1 - 16) - 0.391 * (u - 128) - 0.813 * (v - 128);
-        *(p++) = 1.164 * (y1 - 16) + 2.018 * (u - 128);
-        *(p++) = 1.164 * (y2 - 16) + 1.596 * (v - 128);
-        *(p++) = 1.164 * (y2 - 16) - 0.391 * (u - 128) - 0.813 * (v - 128);
-        *(p++) = 1.164 * (y2 - 16) + 2.018 * (u - 128);
+        *(p++) = mYV[INDEX(y1, v)];
+        *(p++) = mYX[INDEX(y1, mUV[INDEX(u, v)])];
+        *(p++) = mYU[INDEX(y1, u)];
+        *(p++) = mYV[INDEX(y2, v)];
+        *(p++) = mYX[INDEX(y2, mUV[INDEX(u, v)])];
+        *(p++) = mYU[INDEX(y2, u)];
     }
+}
+
+void YUY2Converter::createTable() {
+    mYV = new char[65536];
+    mYU = new char[65536];
+    mUV = new char[65536];
+    mYX = new char[65536];
+
+    for (int i = 0; i < 256; ++i) {
+        for (int j = 0; j < 256; ++j) {
+            mYV[INDEX(i, j)] = round(1.164 * i + 1.596 * j - 222.912);
+            mYU[INDEX(i, j)] = round(1.164 * i + 2.018 * j - 276.928);
+            mUV[INDEX(i, j)] = round(0.391 * i + 0.813 * j - 28.416);
+            mYX[INDEX(i, j)] = round(1.164 * i - j + 109.376);
+        }
+    }
+}
+
+unsigned char YUY2Converter::round(float value) {
+    if (value < 0) return 0;
+    if (value > 255) return 255;
+    return value;
 }

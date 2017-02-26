@@ -7,7 +7,7 @@
 #include "PCMSource.h"
 #include "FilteredVideoSource.h"
 #include "YUY2Converter.h"
-// #include "MotionDetector.h"
+//#include "MotionDetector.h"
 
 void showUsage() {
     std::cout << "usage: publisher [-w width] [-h height] [-f fps] [-b bitrate] url" << std::endl;
