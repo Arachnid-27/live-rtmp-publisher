@@ -1,4 +1,5 @@
 #include "RTMPPublisher.h"
+#include <iostream>
 
 RTMPPublisher::RTMPPublisher(PacketQueue& queue, MemoryPool& pool): mQueue(queue), mPool(pool) {
     mRTMP = RTMP_Alloc();
@@ -40,10 +41,12 @@ void RTMPPublisher::run() {
         packet.m_nTimeStamp = RTMP_GetTime();
 
         if (!RTMP_IsConnected(mRTMP)) {
+            std::cout << "can not connect to server" << std::endl;
             return;
         }
 
         if (!RTMP_SendPacket(mRTMP, &packet, 1)) {
+            std::cout << "fail to send packet" << std::endl;
             return;
         }
 

@@ -1,4 +1,5 @@
 #include "H264Stream.h"
+#include <iostream>
 
 H264Stream::H264Stream(FilteredVideoSource& source, PacketQueue& queue, MemoryPool& pool, int fps, int bitrate): 
     mInterval(1000 / fps), mSource(source), mQueue(queue), mPool(pool),
@@ -6,6 +7,7 @@ H264Stream::H264Stream(FilteredVideoSource& source, PacketQueue& queue, MemoryPo
 
 void H264Stream::run() {
     if (!mSource.isOpened()) {
+        std::cout << "video device is not open" << std::endl;
         return;
     }
 

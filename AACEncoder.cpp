@@ -11,7 +11,7 @@ AACEncoder::AACEncoder(int sampleRate, int channals, int bitrate) {
         conf->allowMidside = 0;
         conf->useLfe = 0;
         conf->bitRate = bitrate;
-        conf->bandWidth = 32000;
+        conf->bandWidth = 0.5 * bitrate;
         faacEncSetConfiguration(mEncoder, conf);  
 
         mDataBuf = new char[mBufLength];

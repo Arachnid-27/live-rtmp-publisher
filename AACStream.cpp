@@ -1,4 +1,5 @@
 #include "AACStream.h"
+#include <iostream>
 
 AACStream::AACStream(AudioSource& source, PacketQueue& queue, MemoryPool& pool, int bitrate): 
     mSource(source), mQueue(queue), mPool(pool),
@@ -6,6 +7,7 @@ AACStream::AACStream(AudioSource& source, PacketQueue& queue, MemoryPool& pool, 
 
 void AACStream::run() {
     if (!mSource.isOpened()) {
+        std::cout << "audio device is not open" << std::endl;
         return;
     }
 
