@@ -18,8 +18,6 @@ private:
     PacketQueue &mQueue;
     MemoryPool &mPool;
     AACEncoder mEncoder;
-    RTMPPacket mMetadata;
-    char mDataBuf[32];
 };
 
 #endif

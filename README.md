@@ -17,3 +17,11 @@ sudo apt-get install libasound2-dev
 ```
 - v4l2  
 - opencv3 (optional)
+
+# Compile  
+```
+mkdir build
+cd build
+cmake ..
+make
+```

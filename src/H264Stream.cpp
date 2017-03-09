@@ -11,6 +11,8 @@ void H264Stream::run() {
         return;
     }
 
+    char *buf;
+    RTMPPacket packet;
     H264RTMPPackager packager;
     std::chrono::milliseconds duration;
     char *frame;
@@ -27,7 +29,9 @@ void H264Stream::run() {
         if (H264RTMPPackager::isKeyFrame(result.second)) {
             mQueue.push(mMetadata, true);
         }
-        mQueue.push(packager.pack(mPool.getChunk(packager.getBodyLength(result.first)), result.second, result.first));
+        buf = mPool.getChunk(packager.getBodyLength(result.first));
+        packet = packager.pack(buf, result.second, result.first);
+        mQueue.push(packet);
 
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - last);
 

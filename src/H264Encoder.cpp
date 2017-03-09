@@ -7,6 +7,7 @@ H264Encoder::H264Encoder(int width, int height, int fps, int bitrate): mPts(0) {
     mChromaSize = mLumaSize / 4;
 
     x264_param_default_preset(&param, "ultrafast", "zerolatency");
+    x264_param_apply_profile(&param, "baseline");
 
     param.i_log_level = X264_LOG_NONE;
     param.i_csp = X264_CSP_I420;
@@ -22,7 +23,6 @@ H264Encoder::H264Encoder(int width, int height, int fps, int bitrate): mPts(0) {
     param.b_repeat_headers = 0; // add sps and pps manually
     param.b_annexb = 0; // for the convenience of packing
 
-    x264_param_apply_profile(&param, "baseline");
     x264_picture_alloc(&mPicture, param.i_csp, param.i_width, param.i_height);
 
     mHandle = x264_encoder_open(&param);

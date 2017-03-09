@@ -13,18 +13,23 @@ void AACStream::run() {
 
     mSource.setMaxSample(mEncoder.getMaxSample());
 
+    char *buf;
+    RTMPPacket packet;
     AACRTMPPackager packager;
     std::pair<int, char*> frame;
     std::pair<int, char*> result = mEncoder.getMetadata();
 
-    mMetadata = packager.metadata(mDataBuf, result.second, result.first);
-    mQueue.push(mMetadata, true);
+    buf = mPool.getChunk(256);
+    packet = packager.metadata(buf, result.second, result.first);
+    mQueue.push(packet);
 
     while ((frame = mSource.getNextFrames()).second != NULL) {
         result = mEncoder.encode(frame.first, frame.second);
 
         if (result.first != 0) {
-            mQueue.push(packager.pack(mPool.getChunk(packager.getBodyLength(result.first)), result.second, result.first));
+            buf = mPool.getChunk(packager.getBodyLength(result.first));
+            packet = packager.pack(buf, result.second, result.first);
+            mQueue.push(packet);
         }
     }
 }
